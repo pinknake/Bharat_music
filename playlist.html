@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>📂 Bharat Music - Playlists</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>📻 Bharat Music - Playlist</h2>
+  <a href="index.html">⬅ Upload Page</a>
+
+  <input type="text" id="playlistName" placeholder="New Playlist Name">
+  <button onclick="createPlaylist()">➕ Create</button>
+
+  <div id="playlists">Loading...</div>
+
+  <script>
+    const dbURL = "https://musicplayer-a6d09-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+    function createPlaylist() {
+      const name = document.getElementById("playlistName").value.trim();
+      if (!name) return alert("Enter playlist name");
+      const id = name.toLowerCase().replace(/\s+/g, '_');
+      fetch(`${dbURL}/playlists/${id}.json`, {
+        method: 'PUT',
+        body: JSON.stringify({ title: name })
+      }).then(() => {
+        alert("✅ Playlist created");
+        location.reload();
+      });
+    }
+
+    function loadPlaylists() {
+      fetch(`${dbURL}/playlists.json`)
+        .then(res => res.json())
+        .then(data => {
+          let html = '';
+          for (let id in data) {
+            html += `
+              <div class="playlist-box">
+                <strong>${data[id].title}</strong><br>
+                <button onclick="viewPlaylist('${id}')">📂 View Songs</button>
+              </div>`;
+          }
+          document.getElementById("playlists").innerHTML = html;
+        });
+    }
+
+    function viewPlaylist(id) {
+      fetch(`${dbURL}/playlists/${id}/songs.json`)
+        .then(res => res.json())
+        .then(data => {
+          let html = `<h3>🎧 Songs in Playlist</h3>`;
+          for (let key in data) {
+            html += `
+              <div class="playlist-box">
+                <strong>${data[key].title}</strong><br>
+                <audio controls src="${data[key].url}"></audio>
+              </div>`;
+          }
+          document.getElementById("playlists").innerHTML = html;
+        });
+    }
+
+    loadPlaylists();
+  </script>
+</body>
+</html>
