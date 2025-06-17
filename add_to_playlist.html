@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🎧 Add to Playlist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>🎶 Add Songs to Playlist</h2>
+  <a href="playlist.html">📜 View Playlist</a> |
+  <a href="index.html">⬅ Home</a>
+
+  <div id="songs">Loading...</div>
+
+  <script>
+    const db = "https://musicplayer-a6d09-default-rtdb.asia-southeast1.firebasedatabase.app";
+    let playlists = {};
+
+    async function load() {
+      const res = await fetch(`${db}/playlists.json`);
+      playlists = await res.json() || {};
+
+      fetch(`${db}/songs.json`)
+        .then(res => res.json())
+        .then(data => {
+          let html = '';
+          for (let key in data) {
+            html += `
+              <div class="song-box">
+                <strong>${data[key].title}</strong><br>
+                <audio controls src="${data[key].url}"></audio><br>
+                <select id="p-${key}">
+                  <option disabled selected>Choose Playlist</option>
+                  ${Object.keys(playlists).map(pid => `<option value="${pid}">${playlists[pid].title}</option>`).join('')}
+                </select>
+                <button onclick="add('${key}', '${data[key].title}', '${data[key].url}')">Add ➕</button>
+              </div>`;
+          }
+          document.getElementById("songs").innerHTML = html;
+        });
+    }
+
+    function add(key, title, url) {
+      const pid = document.getElementById(`p-${key}`).value;
+      if (!pid) return alert("Select playlist first");
+      fetch(`${db}/playlists/${pid}/songs.json`, {
+        method: "POST",
+        body: JSON.stringify({ title, url })
+      }).then(() => {
+        alert("✅ Added to Playlist");
+      });
+    }
+
+    load();
+  </script>
+</body>
+</html>
