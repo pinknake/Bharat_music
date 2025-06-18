@@ -1,33 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>🎵 Upload Audio Link to Bharat Music</title>
-</head>
-<body>
-  <h2>Paste Audio URL (Hosted elsewhere)</h2>
-  <form onsubmit="uploadSong(event)">
-    <input type="text" id="title" placeholder="Song Title" required><br><br>
-    <input type="url" id="url" placeholder="Audio File URL" required><br><br>
-    <button type="submit">Upload</button>
-  </form>
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = $_POST['title'] ?? '';
+    $file = $_FILES['song'] ?? null;
 
-  <script>
-    function uploadSong(event) {
-      event.preventDefault();
-      const title = document.getElementById('title').value.trim();
-      const url = document.getElementById('url').value.trim();
-
-      if (!title || !url) return alert("Please fill all fields");
-
-      fetch('https://musicplayer-a6d09-default-rtdb.asia-southeast1.firebasedatabase.app/songs.json', {
-        method: 'POST',
-        body: JSON.stringify({ title, url })
-      }).then(() => {
-        alert("✅ Song saved to Firebase RTDB");
-        document.getElementById('title').value = "";
-        document.getElementById('url').value = "";
-      });
+    if (!$title || !$file) {
+        echo "❌ Title or file missing.";
+        exit;
     }
-  </script>
-</body>
-</html>
+
+    // Move uploaded file to uploads/
+    $uploadDir = 'uploads/';
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $filename = basename($file['name']);
+    $targetPath = $uploadDir . time() . '_' . $filename;
+
+    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+        // Set public URL (assuming you're running on localhost:8080)
+        $downloadUrl = "http://localhost:8080/" . $targetPath;
+
+        // Firebase push
+        $data = [
+            'title' => $title,
+            'url'   => $downloadUrl,
+            'online' => false // default not online
+        ];
+
+        $json = json_encode($data);
+        $firebaseURL = "https://musicplayer-a6d09-default-rtdb.asia-southeast1.firebasedatabase.app/songs.json";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $firebaseURL);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        echo "✅ Uploaded and saved to Firebase<br>";
+        echo "<a href='index.html'>⬅ Back to Home</a>";
+    } else {
+        echo "❌ Upload failed.";
+    }
+} else {
+    echo "❌ Invalid request.";
+}
+?>
