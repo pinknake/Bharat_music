@@ -1,35 +1,35 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #fdfcfb;
-  color: #111;
+  font-family: sans-serif;
+  background: #f3f3f3;
   text-align: center;
   padding: 20px;
 }
-input, button, select {
-  padding: 10px;
-  margin: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+
+h1 {
+  color: #ff5722;
 }
-.song-box, .playlist-box {
-  background: #fff;
+
+#songList {
+  list-style: none;
+  padding: 0;
+}
+
+#songList li {
+  background: white;
   margin: 10px auto;
-  padding: 15px;
+  padding: 10px;
+  max-width: 300px;
   border-radius: 10px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
-}
-audio {
-  width: 100%;
-  margin-top: 10px;
-}
-button {
-  background-color: #009688;
-  color: white;
-  border: none;
   cursor: pointer;
+  transition: background 0.3s;
 }
-button:hover {
-  background-color: #00796b;
+
+#songList li:hover {
+  background: #ffe0b2;
+}
+
+audio {
+  margin-top: 20px;
+  width: 90%;
+  max-width: 400px;
 }
