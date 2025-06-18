@@ -1,69 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>🎶 Upload Song</title>
+  <title>🇮🇳 Bharat Music - Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { 
+      font-family: sans-serif; 
+      background: linear-gradient(to right, #fff3e6, #ffe6e6); 
+      text-align: center; 
+      padding: 50px;
+    }
+    h1 { color: #c0392b; }
+    a {
+      display: inline-block;
+      margin: 15px;
+      padding: 15px 25px;
+      background: #2980b9;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 18px;
+    }
+    a:hover {
+      background: #1abc9c;
+    }
+  </style>
 </head>
 <body>
 
-  <h2>🎵 Upload Song to Firebase</h2>
+  <h1>🎼 Welcome to Bharat Music 🎶</h1>
+  <p>Listen, Upload & Organize Your Songs with 🇮🇳 style!</p>
 
-  <form id="uploadForm">
-    <input type="text" name="title" placeholder="Song Title" required><br><br>
-    <input type="file" name="song" accept="audio/*" required><br><br>
-    <button type="submit">⬆ Upload</button>
-  </form>
+  <a href="upload.html">📤 Upload Song</a>
+  <a href="songs.html">🎧 View Songs</a>
+  <a href="playlist.html">📂 View Playlists</a>
+  <a href="add_to_playlist.html">➕ Add to Playlist</a>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
-    import { getDatabase, ref as dbRef, push, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBj0MpUEF_gq2BdW1gTSQd0KCrWukRadK4",
-      authDomain: "musicplayer-a6d09.firebaseapp.com",
-      databaseURL: "https://musicplayer-a6d09-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "musicplayer-a6d09",
-      storageBucket: "musicplayer-a6d09.appspot.com",
-      messagingSenderId: "44572704031",
-      appId: "1:44572704031:web:693770ba678984eee2c42a",
-      measurementId: "G-MXJVZ3KMPB"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const storage = getStorage(app);
-    const database = getDatabase(app);
-
-    document.getElementById("uploadForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const title = document.querySelector('input[name="title"]').value;
-      const file = document.querySelector('input[name="song"]').files[0];
-      if (!title || !file) return alert("❌ Fill all fields");
-
-      const filename = Date.now() + '_' + file.name;
-      const storageRef = ref(storage, 'songs/' + filename);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on('state_changed',
-        null,
-        (error) => alert("❌ Upload failed: " + error),
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            const songRef = push(dbRef(database, 'songs'));
-            set(songRef, {
-              title,
-              url: downloadURL,
-              online: true
-            }).then(() => {
-              alert("✅ Upload Success!");
-              location.reload();
-            });
-          });
-        }
-      );
-    });
-  </script>
 </body>
 </html>
