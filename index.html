@@ -1,40 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>🇮🇳 Bharat Music - Home</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: sans-serif;
-      background: linear-gradient(to right, #fff3e6, #ffe6e6);
-      text-align: center;
-      padding: 50px;
-    }
-    h1 { color: #c0392b; }
-    a {
-      display: inline-block;
-      margin: 15px;
-      padding: 15px 25px;
-      background: #2980b9;
-      color: white;
-      text-decoration: none;
-      border-radius: 10px;
-      font-size: 18px;
-    }
-    a:hover {
-      background: #1abc9c;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Bharat Music 🎵</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>🇮🇳 Bharat Music</h1>
 
-  <h1>🎼 Welcome to Bharat Music 🎶</h1>
-  <p>Listen, Upload & Organize Your Songs with 🇮🇳 style!</p>
+  <div id="player-container">
+    <ul id="songList">
+      <li onclick="playSong('songs/song1.mp3')">🎵 Vande Mataram</li>
+      <li onclick="playSong('songs/song2.mp3')">🎵 Desh Mere</li>
+      <li onclick="playSong('songs/song3.mp3')">🎵 Maa Tujhe Salaam</li>
+    </ul>
 
-  <a href="upload.html">📤 Upload Song</a>
-  <a href="songs.html">🎧 View Songs</a>
-  <a href="playlist.html">📂 View Playlists</a>
-  <a href="add_to_playlist.html">➕ Add to Playlist</a>
+    <audio id="audioPlayer" controls></audio>
+  </div>
 
+  <script>
+    function playSong(path) {
+      const player = document.getElementById("audioPlayer");
+      player.src = path;
+      player.play();
+    }
+  </script>
 </body>
 </html>
