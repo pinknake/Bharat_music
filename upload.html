@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🎵 Upload Song to Bharat Music</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f4f4f4; text-align: center; }
+    input, button { margin: 10px; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+
+  <h2>🎶 Upload Song</h2>
+  <input type="text" id="title" placeholder="Song Title" required><br>
+  <input type="file" id="file" accept="audio/*" required><br>
+  <button onclick="uploadSong()">🔥 Upload</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+    import { getDatabase, ref as dbRef, push, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBj0MpUEF_gq2BdW1gTSQd0KCrWukRadK4",
+      authDomain: "musicplayer-a6d09.firebaseapp.com",
+      databaseURL: "https://musicplayer-a6d09-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "musicplayer-a6d09",
+      storageBucket: "musicplayer-a6d09.appspot.com",
+      messagingSenderId: "44572704031",
+      appId: "1:44572704031:web:693770ba678984eee2c42a",
+      measurementId: "G-MXJVZ3KMPB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const database = getDatabase(app);
+
+    window.uploadSong = async function () {
+      const title = document.getElementById('title').value.trim();
+      const file = document.getElementById('file').files[0];
+
+      if (!title || !file) return alert("Please enter title and select a file.");
+
+      const storageRef = ref(storage, 'songs/' + Date.now() + '_' + file.name);
+      uploadBytes(storageRef, file).then(snapshot => {
+        getDownloadURL(snapshot.ref).then(url => {
+          const songRef = push(dbRef(database, 'songs'));
+          set(songRef, {
+            title: title,
+            url: url
+          });
+          alert("✅ Song uploaded successfully!");
+        });
+      }).catch(err => {
+        alert("❌ Upload failed: " + err.message);
+      });
+    };
+  </script>
+
+</body>
+</html>
