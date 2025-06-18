@@ -1,31 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>🎶 Bharat Music - Upload</title>
+  <title>🎵 Upload Bharat Song</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: sans-serif; text-align: center; background: #f0f0f0; padding: 20px; }
-    input, button { padding: 10px; margin: 10px; width: 90%; max-width: 400px; }
-    .song-box { background: white; padding: 15px; margin: 10px auto; border-radius: 10px; width: 90%; max-width: 400px; }
-    audio { width: 100%; margin-top: 10px; }
-  </style>
 </head>
-<body>
+<body style="text-align:center; font-family:sans-serif; padding:20px;">
 
-  <h2>🎵 Upload Your Song</h2>
-  <input type="text" id="title" placeholder="Song Title"><br>
-  <input type="file" id="audio" accept="audio/*"><br>
-  <button onclick="uploadSong()">⬆ Upload to Firebase</button>
+  <h2>🎧 Upload Song (via URL)</h2>
 
-  <h2>🎧 Songs Folder</h2>
-  <div id="songs">Loading...</div>
+  <input type="text" id="title" placeholder="Song Title" /><br><br>
+  <input type="text" id="url" placeholder="Direct MP3 File URL" /><br><br>
+  <button onclick="uploadSong()">🚀 Upload</button>
 
-  <!-- Firebase SDKs -->
+  <div id="status"></div>
+
   <script type="module">
+    // Firebase CDN imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
-    import { getDatabase, push, ref as dbRef, set, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBj0MpUEF_gq2BdW1gTSQd0KCrWukRadK4",
       authDomain: "musicplayer-a6d09.firebaseapp.com",
@@ -37,52 +31,27 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const storage = getStorage(app);
     const db = getDatabase(app);
 
-    function uploadSong() {
-      const title = document.getElementById("title").value.trim();
-      const file = document.getElementById("audio").files[0];
-      if (!title || !file) return alert("Please enter title and choose a file");
+    window.uploadSong = function () {
+      const title = document.getElementById('title').value.trim();
+      const url = document.getElementById('url').value.trim();
 
-      const storageRef = ref(storage, 'songs/' + Date.now() + '_' + file.name);
+      if (!title || !url) {
+        alert("Please enter both title and valid MP3 URL.");
+        return;
+      }
 
-      uploadBytes(storageRef, file).then(snapshot => {
-        return getDownloadURL(snapshot.ref);
-      }).then(url => {
-        const songRef = push(dbRef(db, 'songs'));
-        set(songRef, { title, url });
-        alert("✅ Uploaded!");
+      const songRef = push(ref(db, 'songs'));
+      set(songRef, { title: title, url: url }).then(() => {
+        document.getElementById("status").innerHTML = "✅ Uploaded successfully!";
         document.getElementById("title").value = "";
-        document.getElementById("audio").value = "";
-      }).catch(error => {
-        alert("❌ Upload failed: " + error);
+        document.getElementById("url").value = "";
+      }).catch((err) => {
+        document.getElementById("status").innerHTML = "❌ Error: " + err;
       });
-    }
-
-    function loadSongs() {
-      const songsDiv = document.getElementById("songs");
-      const songsRef = dbRef(db, 'songs');
-
-      onValue(songsRef, snapshot => {
-        const data = snapshot.val();
-        songsDiv.innerHTML = '';
-        if (!data) {
-          songsDiv.innerHTML = "No songs uploaded yet.";
-          return;
-        }
-
-        Object.values(data).reverse().forEach(song => {
-          const box = document.createElement('div');
-          box.className = 'song-box';
-          box.innerHTML = `<strong>${song.title}</strong><br>
-                           <audio controls src="${song.url}"></audio>`;
-          songsDiv.appendChild(box);
-        });
-      });
-    }
-
-    loadSongs();
+    };
   </script>
+
 </body>
 </html>
