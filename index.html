@@ -1,57 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>🎵 Upload Bharat Song</title>
+  <title>🇮🇳 Bharat Music - Home</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(to right, #fff3e6, #ffe6e6);
+      text-align: center;
+      padding: 50px;
+    }
+    h1 { color: #c0392b; }
+    a {
+      display: inline-block;
+      margin: 15px;
+      padding: 15px 25px;
+      background: #2980b9;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 18px;
+    }
+    a:hover {
+      background: #1abc9c;
+    }
+  </style>
 </head>
-<body style="text-align:center; font-family:sans-serif; padding:20px;">
+<body>
 
-  <h2>🎧 Upload Song (via URL)</h2>
+  <h1>🎼 Welcome to Bharat Music 🎶</h1>
+  <p>Listen, Upload & Organize Your Songs with 🇮🇳 style!</p>
 
-  <input type="text" id="title" placeholder="Song Title" /><br><br>
-  <input type="text" id="url" placeholder="Direct MP3 File URL" /><br><br>
-  <button onclick="uploadSong()">🚀 Upload</button>
-
-  <div id="status"></div>
-
-  <script type="module">
-    // Firebase CDN imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
-
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBj0MpUEF_gq2BdW1gTSQd0KCrWukRadK4",
-      authDomain: "musicplayer-a6d09.firebaseapp.com",
-      databaseURL: "https://musicplayer-a6d09-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "musicplayer-a6d09",
-      storageBucket: "musicplayer-a6d09.appspot.com",
-      messagingSenderId: "44572704031",
-      appId: "1:44572704031:web:693770ba678984eee2c42a"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    window.uploadSong = function () {
-      const title = document.getElementById('title').value.trim();
-      const url = document.getElementById('url').value.trim();
-
-      if (!title || !url) {
-        alert("Please enter both title and valid MP3 URL.");
-        return;
-      }
-
-      const songRef = push(ref(db, 'songs'));
-      set(songRef, { title: title, url: url }).then(() => {
-        document.getElementById("status").innerHTML = "✅ Uploaded successfully!";
-        document.getElementById("title").value = "";
-        document.getElementById("url").value = "";
-      }).catch((err) => {
-        document.getElementById("status").innerHTML = "❌ Error: " + err;
-      });
-    };
-  </script>
+  <a href="upload.html">📤 Upload Song</a>
+  <a href="songs.html">🎧 View Songs</a>
+  <a href="playlist.html">📂 View Playlists</a>
+  <a href="add_to_playlist.html">➕ Add to Playlist</a>
 
 </body>
 </html>
